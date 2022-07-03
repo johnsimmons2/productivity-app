@@ -1,0 +1,88 @@
+Table users as U {
+  id int [pk, increment] // auto-increment
+  firstName varchar
+  lastName varchar
+  username varchar
+  email varchar
+  password varchar
+  salt varchar
+  created datetime
+  lastOnline datetime
+}
+
+enum incomeRate {
+  daily
+  weekly
+  biweekly
+  monthly
+  bimonthly
+  semiannually
+  annually
+}
+
+enum transactionType {
+  credit
+  debit
+}
+
+Table transactions as T {
+  id int [pk, increment]
+  userId int
+  amount double
+  type transactionType
+  date datetime
+  budgetId int
+}
+
+Table transaction_details as TD {
+  id int [pk, increment]
+  transactionId int
+  categoryId int
+  note varchar
+}
+
+Table categories as TC {
+  id int [pk, increment]
+  userId int
+  name varchar
+  color varchar
+}
+
+Ref: T.userId > U.id
+Ref: TC.userId - U.id
+Ref: T.id < TD.transactionId
+Ref: TD.categoryId < TC.id
+
+Table budgets as B {
+  id int [pk, increment]
+  userId int
+  amount double
+  adjustments double
+  categoryId int
+  scheduleId int
+}
+
+Table schedules as S {
+  id int [pk, increment]
+  startDate datetime
+  endDate datetime
+  chron varchar
+}
+
+Ref: B.userId > U.id
+Ref: B.categoryId < TC.id
+Ref: B.id - T.budgetId
+Ref: B.scheduleId - S.id
+
+Table habit as H {
+  id int [pk, increment]
+  userId int
+  description varchar
+  count double
+  scheduleId int
+  budgetId int
+}
+
+Ref: H.userId > U.id
+Ref: H.scheduleId - S.id
+Ref: H.budgetId - B.id
