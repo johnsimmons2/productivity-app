@@ -52,7 +52,7 @@ class DBSetupService:
 
     @staticmethod
     def _verifypadmin():
-        Logger.debug('Starting migrations')
+        Logger.debug('Verifying padmin')
         connection = connect(database='postgres', user='postgres', password='root')
         connection.connection.autocommit = True
         createpadmin = connection.execute_command(DBSetupService._get_migration('setup', 'padmin'))
