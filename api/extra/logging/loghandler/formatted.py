@@ -3,7 +3,7 @@ from extra.logging.loghandler.loghandler import LogHandler
 
 
 class FormattedLogHandler(LogHandler):
-    class Colors:
+    class Color:
         # NON RESERVED
         BLUE = '\033[94m'
         CYAN = '\033[96m'
@@ -17,9 +17,9 @@ class FormattedLogHandler(LogHandler):
         BOLD = '\033[1m'
         UNDERLINE = '\033[4m'
 
-    _color_dates = False
-    _color_logs = True
-    _default_timestamp_color = Colors.BOLD
+    _color_dates: bool = False
+    _color_logs: bool = True
+    _default_timestamp_color: Color = Color.BOLD
 
     def handle(self, log:Log):
         log_col = ''
@@ -27,29 +27,31 @@ class FormattedLogHandler(LogHandler):
         if FormattedLogHandler._color_logs:
             match log._lvl:
                 case LogLevel.DEBUG:
-                    log_col = FormattedLogHandler.Colors.BLUE
+                    log_col = FormattedLogHandler.Color.BLUE
                 case LogLevel.WARN:
-                    log_col = FormattedLogHandler.Colors.WARNING
-                    ts_col = FormattedLogHandler.Colors.WARNING
+                    log_col = FormattedLogHandler.Color.WARNING
+                    ts_col = FormattedLogHandler.Color.WARNING
                 case LogLevel.ERROR:
-                    log_col = FormattedLogHandler.Colors.ERROR \
-                        + FormattedLogHandler.Colors.UNDERLINE
-                    ts_col = FormattedLogHandler.Colors.ERROR  \
-                        + FormattedLogHandler.Colors.UNDERLINE
+                    log_col = FormattedLogHandler.Color.ERROR \
+                        + FormattedLogHandler.Color.UNDERLINE
+                    ts_col = FormattedLogHandler.Color.ERROR  \
+                        + FormattedLogHandler.Color.UNDERLINE
                 case LogLevel.SUCCESS:
-                    log_col = FormattedLogHandler.Colors.GREEN
-                    ts_col = FormattedLogHandler.Colors.GREEN
+                    log_col = FormattedLogHandler.Color.GREEN
+                    ts_col = FormattedLogHandler.Color.GREEN
         message = FormattedLogHandler._apply_color(log._get_timeless_log(), log_col)
         timestamp = FormattedLogHandler._apply_color(log._get_timestamp_format(), ts_col)
         print(timestamp + message)
 
-    def config_set_color_dates(self, val):
+    def set_color_dates(self, val: bool):
         FormattedLogHandler._color_dates = val
+        return self
 
-    def config_set_color_logs(self, val):
+    def set_color_logs(self, val: bool):
         FormattedLogHandler._color_logs = val
+        return self
 
     def _apply_color(text, color):
-        return str(color) + str(text) + FormattedLogHandler.Colors.ENDC
+        return str(color) + str(text) + FormattedLogHandler.Color.ENDC
     
 

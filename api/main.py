@@ -16,6 +16,6 @@ def get():
 
 if __name__ == 'main':
     # Setup log handler for colors
-    Logger.config_set_handler(FormattedLogHandler())
+    Logger.config_set_handler(FormattedLogHandler().set_color_dates(True))
     DBSetupService.start()
 
