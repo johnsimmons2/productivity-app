@@ -13,10 +13,12 @@ user=padmin
 password=ppassword`
 
 ## Running locally
+`cd` to `/productivity-app`,
 `ng serve` Opens to 4200
+`npm run flask` runs the API
 
 ## Modifying the Schema
-If the schema for any table is edited or added, the script to create the table should be added to ./sql/table with "create_tablename.sql" as the format, and then the name of the table added to the TABLES array constant in the dbservice class.
+If the schema for any table is edited or added, the script to create the table should be added to /database/sql/table with "create_tablename.sql" as the format, and then the name of the table added to the TABLES array constant in the dbservice class.
 
 ## Todo
 - Setup DB repo stuff to create tables if they do not exist
