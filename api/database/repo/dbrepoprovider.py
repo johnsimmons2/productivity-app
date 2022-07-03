@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from collections import OrderedDict
+from psycopg2.extras import DictRow
 from config import config
-from model import Entity, ResultDto
+from model import Entity, ResultDto, UserTable
 from database.repo.dbconnection import connect
 
 
@@ -34,11 +34,13 @@ class DBRepoProvider:
         sql = "SELECT * FROM public.{0};".format(tableName)
         return self.execute_command(sql)
 
-    def handle(self, qresult: OrderedDict) -> list[Entity]:
+    def handle(self, qresult: DictRow | list) -> list[Entity]:
         result = []
-        for row in qresult:
-            entity = self._mapColumnsToEntity(row)
-            result.append(entity)
+        if type(qresult) == list:
+            for row in qresult:
+                result.append(self.handle(row))
+        if type(qresult) == DictRow:
+            result.append(self._mapColumnsToEntity(qresult))
         return result
 
     def _getInsertParameters(self, data) -> tuple:

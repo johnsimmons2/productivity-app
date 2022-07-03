@@ -24,7 +24,13 @@ class ServiceChain:
             Logger.warn('Startup migrations haulted on migration command {0}'.format(cmd))
 
 class DBSetupService:
-    TABLES = ['users', 'transactions']
+    TABLES = ['users', 
+            'transactions', 
+            'transaction_details', 
+            'budgets', 
+            'budget_details', 
+            'schedules', 
+            'categories']
     DATABASE_NAME = 'productivity'
 
     @classmethod
@@ -66,12 +72,21 @@ class DBSetupService:
 
     @staticmethod
     def _verifytables():
+        success = True
         connection = connect()
         for table in DBSetupService.TABLES:
             tableExists = connection.execute_command("select exists(select * from information_schema.tables where table_name='{0}')".format(table))
             if tableExists.data == False:
                 createTable = connection.execute_command(DBSetupService._get_migration('table', table))
+                if createTable.success == False:
+                    Logger.error('Could not create table {0}.'.format(table))
+                    success = False
+                else:
+                    Logger.debug('Created table {0}'.format(table))
+            else:
+                Logger.debug('Verified table {0}'.format(table))
         connection.close()
+        return success
     
     @staticmethod
     def _get_migration(entityType: str, name: str, migrationType: str = 'create'):

@@ -1,7 +1,9 @@
+from typing import OrderedDict
 from model import ResultDto
 from config import config
 from extra.logging import Logger
 import psycopg2
+from psycopg2.extras import DictCursor, DictRow
 
 DEFAULT_TIMEOUT = 30
 
@@ -20,13 +22,15 @@ class Connection:
             result.errors.append('Connection request failed. Cannot execute command.')
             return result
         try:
+            self.connection.cursor_factory = DictCursor
             cur = self.connection.cursor()
             cur.execute(sql)
             self.connection.commit()
             try:
                 result.rowcount = cur.rowcount
                 result.statusmessage = cur.statusmessage
-                result.data = self._compress(cur.fetchall())
+                raw = cur.fetchall()
+                result.data = self._compress(raw)
             except (psycopg2.ProgrammingError) as error:
                 pass
             result.success = True
@@ -43,6 +47,8 @@ class Connection:
             pass
 
     def _compress(self, data: any):
+        if isinstance(data, DictRow):
+            return data
         if isinstance(data, list):
             if len(data) == 0:
                 return None

@@ -4,7 +4,7 @@ from model import ResultDto
 
 class Controller:
     @staticmethod
-    def handle(result: ResultDto, status: str):
+    def handle(status: str, result: ResultDto = None):
         if isinstance(result, str):
             result = ResultDto(data=result, success=True, statusmessage='Online')
         msg = {
@@ -22,12 +22,17 @@ class Controller:
         return (msg, status)
 
     @staticmethod
-    def OK(result: ResultDto) -> Tuple:
-        return Controller.handle(result, '200 OK')
+    def OK(result: ResultDto = None) -> Tuple:
+        return Controller.handle('200 OK', result)
     
     @staticmethod
-    def Posted(result: ResultDto) -> Tuple:
-        return Controller.handle(result, '201 POSTED')
+    def Posted(result: ResultDto = None) -> Tuple:
+        return Controller.handle('201 POSTED', result)
+
+    @staticmethod
+    def UnAuthorized(result: ResultDto = None) -> Tuple:
+        return Controller.handle('401 UNAUTHORIZED', result)
 
 OK = Controller.OK
 Posted = Controller.Posted
+UnAuthorized = Controller.UnAuthorized

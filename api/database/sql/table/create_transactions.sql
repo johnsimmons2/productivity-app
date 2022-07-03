@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.transactions
 (
-    amount integer NOT NULL,
+    amount money NOT NULL,
     "categoryId" text COLLATE pg_catalog."default" NOT NULL,
     credit bit(1) NOT NULL,
     date date NOT NULL,
