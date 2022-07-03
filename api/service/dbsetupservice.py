@@ -1,25 +1,27 @@
 from config import config
 from database import connect
 from definitions import ROOT_PATH
+from extra.logging import Logger
 import glob
 import os
 
 class ServiceChain:
     def __init__(self):
-        self.succeed = False
+        self.succeeded = False
 
     def first(self, cmd: any):
         result = cmd()
         if result is not None and isinstance(result, bool):
-            self.succeed = result
+            self.succeeded = result
         else:
-            self.succeed = True
+            self.succeeded = True
         return self
 
     def then(self, cmd: any):
-        return self.first(cmd)
-
-            
+        if self.succeeded:
+            return self.first(cmd)
+        else:
+            Logger.warn('Startup migrations haulted on migration command {0}'.format(cmd))
 
 class DBSetupService:
     TABLES = ['users', 'transactions']
@@ -27,6 +29,7 @@ class DBSetupService:
 
     @classmethod
     def start(cls):
+        Logger.debug('Starting migrations')
         ServiceChain().first(cls._verifypadmin) \
             .then(cls._verifydb)                \
             .then(cls._verifytables)
@@ -40,19 +43,24 @@ class DBSetupService:
         if verifyDb.data == False:
             createDb = connection.execute_command(DBSetupService._get_migration('setup', 'db'))
             if createDb.success == False:
-                print('Failed to run DB Setup Migration.')
+                Logger.error('Database did not exist but it could not be created from migrations.')
+            else:
+                Logger.debug('Database was successfully created.')
             connection.close()
             return createDb.success
         return True
 
     @staticmethod
     def _verifypadmin():
+        Logger.debug('Starting migrations')
         connection = connect(database='postgres', user='postgres', password='root')
         connection.connection.autocommit = True
         createpadmin = connection.execute_command(DBSetupService._get_migration('setup', 'padmin'))
         
         if createpadmin.success == False:
-            print('Failed to run DB Setup Migration.')
+            Logger.error('Could not create padmin user role from migrations.')
+        else:
+            Logger.debug('padmin was verified successfully.')
         connection.close()
         return createpadmin.success
 

@@ -1,5 +1,6 @@
 from model import ResultDto
 from config import config
+from extra.logging import Logger
 import psycopg2
 
 DEFAULT_TIMEOUT = 30
@@ -25,12 +26,12 @@ class Connection:
             try:
                 result.rowcount = cur.rowcount
                 result.statusmessage = cur.statusmessage
-                result.data = cur.fetchall()
+                result.data = self._compress(cur.fetchall())
             except (psycopg2.ProgrammingError) as error:
                 pass
             result.success = True
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            Logger.error(error)
             result.errors.append(error)
         return result
     
@@ -40,6 +41,19 @@ class Connection:
             self.connection.close()
         except:
             pass
+
+    def _compress(self, data: any):
+        if isinstance(data, list):
+            if len(data) == 0:
+                return None
+            elif len(data) == 1:
+                return self._compress(data[0])
+            else:
+                return list(map(self._compress, data))
+        elif isinstance(data, tuple):
+            if len(data) == 1:
+                return data[0]
+        return data
 
 def connect(**params) -> Connection:
     if params is None or len(params) == 0:
@@ -52,7 +66,7 @@ def connect(**params) -> Connection:
         connection.connected = True
         connection.succeeded = True
     except Exception as error:
-        print(error)
+        Logger.error(error)
     return connection
 
 def _default_params():
