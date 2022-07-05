@@ -1,8 +1,6 @@
 from flask import Blueprint
-from controller.controller import Controller
+from controller.controller import Controller, OK
 from service import TransactionService
-OK = Controller.OK
-Posted = Controller.Posted
 
 class TransactionController(Controller):
     transactions = Blueprint('transactions', __name__)

@@ -15,5 +15,4 @@ class UserService:
     @classmethod
     def toUser(cls, row: dict) -> User:
         user: User = cls.repo._mapColumnsToEntity(row)
-        user.password = row['password']
         return user

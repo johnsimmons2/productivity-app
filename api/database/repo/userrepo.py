@@ -4,6 +4,22 @@ from database.repo import DBRepoProvider
 from uuid import uuid4
 
 class UserRepo(DBRepoProvider):
+    def get(self, id: str, col: str = 'id'):
+        tableName = self._getTableName()
+        sql = "SELECT id, \"firstName\", \"lastName\", email, username, created, \"lastOnline\" FROM public.{0} WHERE \"{1}\"='{2}';".format(tableName, col, id)
+        return self.execute_command(sql)
+    
+    def getByEmail(self, email: str):
+        return self.get(email, 'email')
+    
+    def getByUsername(self, username: str):
+        return self.get(username, 'username')
+    
+    def getAll(self):
+        tableName = self._getTableName()
+        sql = "SELECT id, \"firstName\", \"lastName\", email, username, created, \"lastOnline\" FROM public.{0};".format(tableName)
+        return self.execute_command(sql)
+
     def _getTableName(self):
         return UserTable.TABLE_NAME
     
@@ -12,29 +28,15 @@ class UserRepo(DBRepoProvider):
 
     def _mapColumnsToEntity(self, row: dict) -> Entity:
         return User(
-            id=str(uuid4()), 
-            username=row['username'],
-            email=row['email'],
-            fName=row['firstName'],
-            lName=row['lastName'],
+            id=row['id'] if 'id' in row.keys() else None,
+            username=row['username'] if 'username' in row.keys() else None,
+            email=row['email'] if 'email' in row.keys() else None,
+            fName=row['firstName'] if 'firstName' in row.keys() else None,
+            lName=row['lastName'] if 'lastName' in row.keys() else None,
+            password=row['password'] if 'password' in row.keys() else None,
             salt=row['salt'] if 'salt' in row.keys() else None,
             created=row['created'] if 'created' in row.keys() else None,
             lastOnline=row['lastOnline'] if 'lastOnline' in row.keys() else None)
-    
-    def get(self, id: str):
-        tableName = self._getTableName()
-        sql = "SELECT id, \"firstName\", \"lastName\", email, username, salt, created, \"lastOnline\" FROM public.{0} WHERE id='{1}';".format(tableName, id)
-        return self.execute_command(sql)
-    
-    def getByEmail(self, email: str):
-        tableName = self._getTableName()
-        sql = "SELECT id, \"firstName\", \"lastName\", email, username, salt, created, \"lastOnline\" FROM public.{0} WHERE email='{1}';".format(tableName, email)
-        return self.execute_command(sql)
-    
-    def getAll(self):
-        tableName = self._getTableName()
-        sql = "SELECT id, \"firstName\", \"lastName\", email, username, salt, created, \"lastOnline\" FROM public.{0};".format(tableName)
-        return self.execute_command(sql)
 
     def _mapEntityToColumns(self, data: Entity, cols: list) -> list:
         if isinstance(data, User):

@@ -4,35 +4,41 @@ from model import ResultDto
 
 class Controller:
     @staticmethod
-    def handle(status: str, result: ResultDto = None):
-        if isinstance(result, str):
-            result = ResultDto(data=result, success=True, statusmessage='Online')
+    def handle(status: str, result: ResultDto | str = None, success: bool = False):
+        if isinstance(result, str) or result is None:
+            result = ResultDto(data=result, success=success, statusmessage=status)
         msg = {
-            'request': request.url,
             'success': result.success,
             'status': result.statusmessage,
-            'count': result.rowcount
+            'request': request.url
         }
+        if result.rowcount > 0:
+            msg['rowcount'] = result.rowcount
         if result.entities:
             msg['response'] = result.entities
         elif result.data:
             msg['response'] = result.data
-        elif len(result.errors) > 0:
+        if len(result.errors) > 0:
             msg['response'] = str(result.errors[0]) if len(result.errors) == 1 else str(result.errors)
         return (msg, status)
 
     @staticmethod
-    def OK(result: ResultDto = None) -> Tuple:
-        return Controller.handle('200 OK', result)
+    def OK(result: ResultDto | str = None) -> Tuple:
+        return Controller.handle('200 OK', result, True)
     
     @staticmethod
-    def Posted(result: ResultDto = None) -> Tuple:
-        return Controller.handle('201 POSTED', result)
+    def Posted(result: ResultDto | str = None) -> Tuple:
+        return Controller.handle('201 POSTED', result, True)
 
     @staticmethod
-    def UnAuthorized(result: ResultDto = None) -> Tuple:
-        return Controller.handle('401 UNAUTHORIZED', result)
+    def UnAuthorized(result: ResultDto | str = None) -> Tuple:
+        return Controller.handle('401 UNAUTHORIZED', result, False)
+    
+    @staticmethod
+    def BadRequest(result: ResultDto | str = None) -> Tuple:
+        return Controller.handle('400 BAD REQUEST', result, False)
 
 OK = Controller.OK
 Posted = Controller.Posted
 UnAuthorized = Controller.UnAuthorized
+BadRequest = Controller.BadRequest

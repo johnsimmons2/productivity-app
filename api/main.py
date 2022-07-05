@@ -1,12 +1,10 @@
 from flask import Flask
-from controller.controller import Controller
-from controller.usercontroller import UserController
-from controller.transactioncontroller import TransactionController
+from controller import UserController, TransactionController, OK, AuthController
 from service.dbsetupservice import DBSetupService
 from extra.logging import Logger, FormattedLogHandler
-OK = Controller.OK
 
 app = Flask(__name__)
+app.register_blueprint(AuthController.auth)
 app.register_blueprint(UserController.users)
 app.register_blueprint(TransactionController.transactions)
 

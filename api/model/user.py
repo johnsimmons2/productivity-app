@@ -4,6 +4,7 @@ from model.entity import Entity
 
 @dataclass
 class User(Entity):
+    id: str
     username: str
     email: str
     fName: str
