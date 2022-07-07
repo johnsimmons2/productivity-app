@@ -1,10 +1,12 @@
 from flask import Blueprint
-from controller.controller import Controller, OK
+from decorator.auth.authdecorators import isAuthorized
+from controller.controller import OK
 from service import TransactionService
 
-class TransactionController(Controller):
-    transactions = Blueprint('transactions', __name__)
 
-    @transactions.route('/transactions', methods=['GET'])
-    def get():
-        return OK(TransactionService.getAll())
+transactions = Blueprint('transactions', __name__)
+
+@transactions.route('/transactions', methods=['GET'])
+@isAuthorized
+def get():
+    return OK(TransactionService.getAll())

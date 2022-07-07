@@ -4,10 +4,11 @@ from flask import request
 from model import ResultDto
 
 def isAuthorized(func):
-    def inner(*arg, **kwargs) -> ResultDto:
+    def wrapper(*arg, **kwargs) -> ResultDto:
         verified = verifyToken(getAccessToken())
         if verified:
             return func(*arg, **kwargs)
         else:
             return UNAUTH('The access token is invalid or expired.')
-    return inner
+    wrapper.__name__ = func.__name__
+    return wrapper
