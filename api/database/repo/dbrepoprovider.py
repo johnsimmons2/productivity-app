@@ -6,69 +6,82 @@ from database.repo.dbconnection import connect
 
 
 class DBRepoProvider:
-    def execute_command(self, sql: str) -> ResultDto:
+    @classmethod
+    def execute_command(cls, sql: str) -> ResultDto:
         connection = connect()
         result = connection.execute_command(sql)
         if result.success and result.data:
-            result.entities = self.handle(result.data)
+            result.entities = cls.handle(result.data)
         return result
     
-    def insert(self, data: Entity):
-        params = self._getInsertParameters(data)
+    @classmethod
+    def insert(cls, data: Entity):
+        params = cls._getInsertParameters(data)
         sql = '''INSERT INTO public.{0}({1})
             VALUES ({2});'''.format(params[0], params[1], params[2])
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
 
-    def get(self, id: str):
-        tableName = self._getTableName()
+    @classmethod
+    def get(cls, id: str):
+        tableName = cls._getTableName()
         sql = "SELECT * FROM public.{0} WHERE id='{1}';".format(tableName, id)
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
     
-    def getMany(self, ids: list[str]):
-        tableName = self._getTableName()
+    @classmethod
+    def getMany(cls, ids: list[str]):
+        tableName = cls._getTableName()
         sql = "SELECT * FROM public.{0} WHERE id in ({1});".format(tableName, ','.join(f"'{x}'" for x in ids))
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
 
-    def getAll(self):
-        tableName = self._getTableName()
+    @classmethod
+    def getAll(cls):
+        tableName = cls._getTableName()
         sql = "SELECT * FROM public.{0};".format(tableName)
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
 
-    def handle(self, qresult: DictRow | list) -> list[Entity]:
+    @classmethod
+    def handle(cls, qresult: DictRow | list) -> list[Entity]:
         result = []
         if type(qresult) == list:
             for row in qresult:
-                result.append(self.handle(row))
+                result.append(cls.handle(row))
         if type(qresult) == DictRow:
-            result.append(self._mapColumnsToEntity(qresult))
+            result.append(cls._mapColumnsToEntity(qresult))
         return result
 
-    def _getInsertParameters(self, data) -> tuple:
-        cols = self._getColumnNames()
-        return (self._getTableName(),
+    @classmethod
+    def _getInsertParameters(cls, data) -> tuple:
+        cols = cls._getColumnNames()
+        return (cls._getTableName(),
             ','.join(f'"{str(w)}"' for w in cols),
-            ','.join(f"'{str(w)}'" for w in self._mapEntityToColumns(data, cols)))
+            ','.join(f"'{str(w)}'" for w in cls._mapEntityToColumns(data, cols)))
 
+    @classmethod
     @abstractmethod
-    def _mapEntityToColumns(self, entity: Entity, columns: list) -> list:
+    def _mapEntityToColumns(cls, entity: Entity, columns: list) -> list:
         pass
 
+    @classmethod
     @abstractmethod
-    def _mapColumnsToEntity(self, row: dict) -> Entity:
+    def _mapColumnsToEntity(cls, row: dict) -> Entity:
         pass
 
+    @classmethod
     @abstractmethod
-    def _getEntityFromResult(self, result: ResultDto):
+    def _getEntityFromResult(cls, result: ResultDto):
         pass
 
+    @classmethod
     @abstractmethod
-    def _mapDataAndColumns(self, data: Entity, cols: dict):
+    def _mapDataAndColumns(cls, data: Entity, cols: dict):
         pass
 
+    @classmethod
     @abstractmethod
-    def _getColumnNames(self):
+    def _getColumnNames(cls):
         pass
 
+    @classmethod
     @abstractmethod
-    def _getTableName(self):
+    def _getTableName(cls):
         pass

@@ -76,8 +76,5 @@ def connect(**params) -> Connection:
     return connection
 
 def _default_params():
-    params = {}
-    # TODO: Environment / Config manager should make this easier
-    startupParams = config('startup')
     params = config('dbconfig')
     return params

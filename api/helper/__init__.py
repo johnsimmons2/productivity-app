@@ -1,3 +1,2 @@
-__all__ = ['getUser']
-
-from helper.inputhelper import getUser
+import helper.inputhelper
+import helper.jwthelper

@@ -4,29 +4,36 @@ from database.repo import DBRepoProvider
 from uuid import uuid4
 
 class UserRepo(DBRepoProvider):
-    def get(self, id: str, col: str = 'id'):
-        tableName = self._getTableName()
+    @classmethod
+    def get(cls, id: str, col: str = 'id'):
+        tableName = cls._getTableName()
         sql = "SELECT id, \"firstName\", \"lastName\", email, username, created, \"lastOnline\" FROM public.{0} WHERE \"{1}\"='{2}';".format(tableName, col, id)
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
     
-    def getByEmail(self, email: str):
-        return self.get(email, 'email')
+    @classmethod
+    def getByEmail(cls, email: str):
+        return cls.get(email, 'email')
     
-    def getByUsername(self, username: str):
-        return self.get(username, 'username')
+    @classmethod
+    def getByUsername(cls, username: str):
+        return cls.get(username, 'username')
     
-    def getAll(self):
-        tableName = self._getTableName()
+    @classmethod
+    def getAll(cls):
+        tableName = cls._getTableName()
         sql = "SELECT id, \"firstName\", \"lastName\", email, username, created, \"lastOnline\" FROM public.{0};".format(tableName)
-        return self.execute_command(sql)
+        return cls.execute_command(sql)
 
-    def _getTableName(self):
+    @classmethod
+    def _getTableName(cls):
         return UserTable.TABLE_NAME
     
-    def _getColumnNames(self):
+    @classmethod
+    def _getColumnNames(cls):
         return UserTable.COLUMNS
 
-    def _mapColumnsToEntity(self, row: dict) -> Entity:
+    @classmethod
+    def _mapColumnsToEntity(cls, row: dict) -> Entity:
         return User(
             id=row['id'] if 'id' in row.keys() else None,
             username=row['username'] if 'username' in row.keys() else None,
@@ -38,7 +45,8 @@ class UserRepo(DBRepoProvider):
             created=row['created'] if 'created' in row.keys() else None,
             lastOnline=row['lastOnline'] if 'lastOnline' in row.keys() else None)
 
-    def _mapEntityToColumns(self, data: Entity, cols: list) -> list:
+    @classmethod
+    def _mapEntityToColumns(cls, data: Entity, cols: list) -> list:
         if isinstance(data, User):
             vals = ['' for _ in range(len(cols))]
             for i, col in enumerate(cols):

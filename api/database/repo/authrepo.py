@@ -1,21 +1,47 @@
-from collections import OrderedDict
-from model.user import User, UserTable, Entity
-from database.repo import DBRepoProvider
+import hashlib
+from model import User, UserTable, Entity, ResultDto
+from database.repo import DBRepoProvider, UserRepo
+from config import config
 from uuid import uuid4
+from extra.logging import Logger
 
 class AuthRepo(DBRepoProvider):
-    def get(self, id: str):
-        tableName = self._getTableName()
-        sql = "SELECT password, id, salt FROM public.{0} WHERE id='{1}';".format(tableName, id)
-        return self.execute_command(sql)
+    @classmethod
+    def isAuthorized(cls, user: User, secret: str) -> User | None:
+        creds: User = cls._getUserCredentials(user.id).entities[0]
+        if creds.password == cls._hash_password(secret, creds.salt):
+            return UserRepo.get(user.id).asEntity()
+    
+    @classmethod
+    def _hash_password(cls, password: str, salt: str) -> str:
+        secret = config('security')
+        try:
+            sha = hashlib.sha256()
+            sha.update(password.encode(encoding = 'UTF-8', errors = 'strict'))
+            sha.update(':'.encode(encoding = 'UTF-8'))
+            sha.update(salt.encode(encoding = 'UTF-8', errors = 'strict'))
+            sha.update(secret['usersecret'].encode(encoding = 'UTF-8', errors = 'strict'))
+            return sha.hexdigest()
+        except Exception as error:
+            Logger.error(error) 
+        return None
 
-    def _getTableName(self):
+    @classmethod
+    def _getUserCredentials(cls, id: str) -> ResultDto:
+        tableName = AuthRepo._getTableName()
+        sql = "SELECT password, id, salt FROM public.{0} WHERE id='{1}';".format(tableName, id)
+        return cls.execute_command(sql)
+
+    @classmethod
+    def _getTableName(cls):
         return UserTable.TABLE_NAME
     
-    def _getColumnNames(self):
+    @classmethod
+    def _getColumnNames(cls):
         return UserTable.COLUMNS
 
-    def _mapColumnsToEntity(self, row: dict) -> Entity:
+    @classmethod
+    def _mapColumnsToEntity(cls, row: dict) -> Entity:
         return User(
             id=str(uuid4()), 
             username=row['username'] if 'username' in row.keys() else None,
@@ -27,7 +53,8 @@ class AuthRepo(DBRepoProvider):
             created=row['created'] if 'created' in row.keys() else None,
             lastOnline=row['lastOnline'] if 'lastOnline' in row.keys() else None)
     
-    def _mapEntityToColumns(self, data: Entity, cols: list) -> list:
+    @classmethod
+    def _mapEntityToColumns(cls, data: Entity, cols: list) -> list:
         if isinstance(data, User):
             vals = ['' for _ in range(len(cols))]
             for i, col in enumerate(cols):
