@@ -32,9 +32,3 @@ class AuthService:
             return None
         
         return AuthRepo.isAuthorized(user, secret)
-    
-    @classmethod
-    def decrypt(cls, email: str, pas: str) -> str:
-        user = UserRepo.getByEmail(email).asEntity()
-        user = AuthRepo._getUserCredentials(user.id).asEntity()
-        return AuthRepo._hash_password(pas, user.salt)

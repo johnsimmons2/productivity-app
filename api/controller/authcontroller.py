@@ -28,10 +28,3 @@ class AuthController(Controller):
             return OK()
         else:
             return UNAUTH()
-    
-    # Route that will be removed eventually. Used for debugging. 
-    # Not a security vulnerability because the entire auth system will be separated out from this codebase.
-    @auth.route('/auth/decrypt', methods = ['POST'])
-    def decrypt():
-        user = getUser()
-        return OK(AuthService.decrypt(user.email, user.password))
