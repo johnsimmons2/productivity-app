@@ -1,9 +1,7 @@
-from config import config
 from database import connect
 from definitions import ROOT_PATH
 from extra.logging import Logger
 import glob
-import os
 
 class ServiceChain:
     def __init__(self):
@@ -24,7 +22,13 @@ class ServiceChain:
             Logger.warn('Startup migrations haulted on migration command {0}'.format(cmd))
 
 class DBSetupService:
-    TABLES = ['users', 'transactions']
+    TABLES = ['users', 
+            'transactions', 
+            'transaction_details', 
+            'budgets', 
+            'budget_details', 
+            'schedules', 
+            'categories']
     DATABASE_NAME = 'productivity'
 
     @classmethod
@@ -40,7 +44,7 @@ class DBSetupService:
         connection.connection.autocommit = True
 
         verifyDb = connection.execute_command("SELECT EXISTS (SELECT FROM pg_database WHERE datname = 'productivity');")
-        if verifyDb.data == False:
+        if verifyDb.data['exists'] == False:
             createDb = connection.execute_command(DBSetupService._get_migration('setup', 'db'))
             if createDb.success == False:
                 Logger.error('Database did not exist but it could not be created from migrations.')
@@ -66,12 +70,21 @@ class DBSetupService:
 
     @staticmethod
     def _verifytables():
+        success = True
         connection = connect()
         for table in DBSetupService.TABLES:
             tableExists = connection.execute_command("select exists(select * from information_schema.tables where table_name='{0}')".format(table))
-            if tableExists.data == False:
+            if tableExists.data['exists'] == False:
                 createTable = connection.execute_command(DBSetupService._get_migration('table', table))
+                if createTable.success == False:
+                    Logger.error('Could not create table {0}.'.format(table))
+                    success = False
+                else:
+                    Logger.debug('Created table {0}'.format(table))
+            else:
+                Logger.debug('Verified table {0}'.format(table))
         connection.close()
+        return success
     
     @staticmethod
     def _get_migration(entityType: str, name: str, migrationType: str = 'create'):

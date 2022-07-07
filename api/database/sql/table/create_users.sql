@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS public.users
     email text COLLATE pg_catalog."default",
     username text COLLATE pg_catalog."default" NOT NULL,
     password text COLLATE pg_catalog."default" NOT NULL,
+    salt text COLLATE pg_catalog."default" NOT NULL,
+    created date NOT NULL,
+    "lastOnline" date,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT user_email UNIQUE (email)
 )

@@ -9,3 +9,7 @@ class ResultDto:
     entities: list = field(default_factory=list)
     success: bool = False
     rowcount: int = 0
+
+    def asEntity(self):
+        if len(self.entities) > 0:
+            return self.entities[0]

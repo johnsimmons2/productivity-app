@@ -2,20 +2,15 @@ from model import User
 from database.repo import UserRepo
 
 class UserService:
-    repo = UserRepo()
-
     @classmethod
     def getAll(cls):
-        return cls.repo.getAll()
+        return UserRepo.getAll()
     
     @classmethod
     def get(cls, id: str):
-        return cls.repo.get(id)
-
-    @classmethod
-    def post(cls, user: User):
-        return cls.repo.insert(user)
+        return UserRepo.get(id)
 
     @classmethod
     def toUser(cls, row: dict) -> User:
-        return cls.repo._mapColumnsToEntity(row)
+        user: User = UserRepo._mapColumnsToEntity(row)
+        return user
