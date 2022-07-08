@@ -1,2 +1,8 @@
+.DS_STORE
 __pycache__/
 *.py[cod]
+/dist/
+*.log
+node_modules
+.editorconfig
+/.vscode/
