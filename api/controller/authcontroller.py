@@ -1,5 +1,5 @@
 from controller.controller import OK, UnAuthorized as UNAUTH, BadRequest as BADREQUEST
-from flask import Blueprint, request
+from flask import Blueprint
 from helper.inputhelper import getUser
 from helper.jwthelper import createToken
 from service import AuthService

@@ -1,6 +1,5 @@
 from helper.jwthelper import verifyToken, getAccessToken
 from controller.controller import UnAuthorized as UNAUTH
-from flask import request
 from model import ResultDto
 
 def isAuthorized(func):

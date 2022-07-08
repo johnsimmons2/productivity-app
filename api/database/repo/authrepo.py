@@ -1,9 +1,9 @@
-import hashlib
 from model import User, UserTable, Entity, ResultDto
 from database.repo import DBRepoProvider, UserRepo
 from config import config
 from uuid import uuid4
 from extra.logging import Logger
+import hashlib
 
 class AuthRepo(DBRepoProvider):
     @classmethod

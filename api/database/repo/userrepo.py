@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from model.user import User, UserTable, Entity
 from database.repo import DBRepoProvider
 from uuid import uuid4

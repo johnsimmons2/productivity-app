@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from psycopg2.extras import DictRow
-from config import config
-from model import Entity, ResultDto, UserTable
+from model import Entity, ResultDto
 from database.repo.dbconnection import connect
 
 

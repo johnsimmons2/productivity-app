@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import email
 from model.entity import Entity
 
 @dataclass

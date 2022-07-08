@@ -1,9 +1,8 @@
-from typing import OrderedDict
 from model import ResultDto
 from config import config
 from extra.logging import Logger
-import psycopg2
 from psycopg2.extras import DictCursor, DictRow
+import psycopg2
 
 DEFAULT_TIMEOUT = 30
 
