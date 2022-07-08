@@ -13,9 +13,11 @@ Front end
 1. `cd` to `/app`
 2. Open another terminal in this directory.
 3. Run in one terminal: `ng serve` Runs the client app on localhost:4200.
+
 API
 1. `cd` to `/app`
 2. Run in terminal: `npm run flask` Runs the Python Flask API on localhost:5000.
+
 Full Stack
 1. `cd` to `/app`
 2. Open 3 terminals
