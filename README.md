@@ -3,7 +3,7 @@
 ## Local Setup / Installation
 0. Make sure you have node.js, npm, and @angular/cli with its dependencies.
 1. Install PostgreSQL latest stable version with pgAdmin 4.
-2. Set the default password for the default user <i>(`postgres`)</i> to `root`.
+2. Set the default password for the default user <i>`(postgres)`</i> to `root`.
 3. Install Python 3.10 and pip3.
 4. Using pip3, install the following packages: `psycopg2`, and `flask`.
 5. After cloning the repo, cd into `app` and run `npm install`.
