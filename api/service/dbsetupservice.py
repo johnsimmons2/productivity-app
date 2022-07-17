@@ -1,7 +1,8 @@
+import glob
 from database import connect
 from definitions import ROOT_PATH
 from extra.logging import Logger
-import glob
+
 
 class ServiceChain:
     def __init__(self):
@@ -20,6 +21,7 @@ class ServiceChain:
             return self.first(cmd)
         else:
             Logger.warn('Startup migrations haulted on migration command {0}'.format(cmd))
+
 
 class DBSetupService:
     TABLES = ['users', 

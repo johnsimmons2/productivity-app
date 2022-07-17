@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-
-@dataclass
 class Entity:
-    id: str
+    _type: any
+    
+    def __init__(self, tp):
+        self._type = tp

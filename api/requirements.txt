@@ -1,0 +1,8 @@
+pylint
+pylint-flask
+pylint-flask-sqlalchemy
+flask
+flask-sqlalchemy
+sqlalchemy
+psycopg2
+jwt

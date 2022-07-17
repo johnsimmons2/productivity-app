@@ -1,5 +1,5 @@
-from database.repo import TransactionRepo
-from model import Transaction
+from database.repo.transactionrepo import TransactionRepo
+from model.transaction import Transaction
 
 class TransactionService:
     repo = TransactionRepo()

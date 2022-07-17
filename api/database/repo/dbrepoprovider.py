@@ -1,9 +1,12 @@
+# DEPRECATED
 from abc import abstractmethod
 from psycopg2.extras import DictRow
-from model import Entity, ResultDto
+from model.resultdto import ResultDto
+from model.entity import Entity
 from database.repo.dbconnection import connect
 
 
+@DeprecationWarning
 class DBRepoProvider:
     @classmethod
     def execute_command(cls, sql: str) -> ResultDto:

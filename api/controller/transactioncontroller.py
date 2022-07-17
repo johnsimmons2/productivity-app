@@ -1,7 +1,7 @@
 from flask import Blueprint
 from decorator.auth.authdecorators import isAuthorized
 from controller.controller import OK
-from service import TransactionService
+from service.transactionservice import TransactionService
 
 
 transactions = Blueprint('transactions', __name__)

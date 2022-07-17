@@ -1,23 +1,18 @@
-from dataclasses import dataclass
-from sqlite3 import Date
-from model import Entity
+from sqlalchemy import String, Float, Boolean, DateTime, Integer
+from . import db
 
-@dataclass
-class Transaction(Entity):
-    amount: float
-    categoryId: str
-    credit: bool
-    date: Date
-    userId: str
 
-class TransactionTable:
-    COLUMNS = [
-        'amount',
-        'categoryId',
-        'credit',
-        'date',
-        'id',
-        'userId'
-    ]
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    id = db.Column(Integer, primary_key=True)
+    amount = db.Column(Float)
+    categoryId = db.Column(Integer)
+    credit = db.Column(Boolean)
+    date: db.Column(DateTime)
+    userId: db.Column(String)
 
-    TABLE_NAME = 'transactions'
+    query: db.Query
+
+    def __repr__(self):
+        return f"<Transaction(id={self.id}, \
+            amount={self.amount}"

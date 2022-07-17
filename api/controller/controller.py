@@ -1,11 +1,19 @@
+from os import stat
+from model.resultdto import ResultDto
+from model.entity import Entity
 from typing import Tuple
 from flask import request
-from model import ResultDto
+
 
 @staticmethod
-def handle(status: str, result: ResultDto | str = None, success: bool = False):
-    if isinstance(result, str) or result is None:
-        result = ResultDto(data=result, success=success, statusmessage=status)
+def handle(status: str, data: any = None, success: bool = False):
+    result = ResultDto()
+    if isinstance(data, ResultDto):
+        result = data
+    else:
+        result.data = data
+        result.success = success
+        result.statusmessage = status
     msg = {
         'success': result.success,
         'status': result.statusmessage,

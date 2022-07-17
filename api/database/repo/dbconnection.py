@@ -1,10 +1,10 @@
-from model import ResultDto
+from model.resultdto import ResultDto
 from config import config
 from extra.logging import Logger
 from psycopg2.extras import DictCursor, DictRow
 import psycopg2
-
 DEFAULT_TIMEOUT = 30
+
 
 class Connection:
     def __init__(self, db: str, user: str, conn: any = None):
@@ -30,7 +30,7 @@ class Connection:
                 result.statusmessage = cur.statusmessage
                 raw = cur.fetchall()
                 result.data = self._compress(raw)
-            except (psycopg2.ProgrammingError) as error:
+            except (psycopg2.ProgrammingError):
                 pass
             result.success = True
         except (Exception, psycopg2.DatabaseError) as error:
@@ -65,7 +65,7 @@ def connect(**params) -> Connection:
         params = _default_params()
     params['connect_timeout'] = DEFAULT_TIMEOUT
     connection = Connection(params['database'], params['user'])
-    try:
+    try: 
         conn = psycopg2.connect(**params)
         connection.connection = conn
         connection.connected = True

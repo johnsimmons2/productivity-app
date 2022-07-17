@@ -1,16 +1,13 @@
-from model import User
-from database.repo import UserRepo
+from model.resultdto import ResultDto
+from model.user import User
+from database.repo.userrepo import UserRepo
+
 
 class UserService:
     @classmethod
     def getAll(cls):
-        return UserRepo.getAll()
-    
+        return UserRepo.get_all()
+
     @classmethod
     def get(cls, id: str):
         return UserRepo.get(id)
-
-    @classmethod
-    def toUser(cls, row: dict) -> User:
-        user: User = UserRepo._mapColumnsToEntity(row)
-        return user

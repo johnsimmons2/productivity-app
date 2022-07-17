@@ -1,27 +1,32 @@
-from model import User
+import json
+import datetime
+from jwt import JWT as jwt
+from model.user import User
 from config import config
 from extra.logging import Logger
 from flask import request
-import json
-import datetime
-import jwt
 
 
-def createToken(user: User) -> str:
-    return jwt.encode({'username': user.username, 'email': user.email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, config('security')['jwtsecret'], "HS256")
+def create_token(user: User) -> str:
+    return jwt.encode({
+        'username': user.username,
+        'email': user.email,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+        }, config('security')['jwtsecret'], "HS256")
 
-def verifyToken(token: str) -> bool:
+def verify_token(token: str) -> bool:
     try:
         result = jwt.decode(token, config('security')['jwtsecret'], "HS256")
         expired = datetime.datetime.utcnow() > datetime.datetime.utcfromtimestamp(result['exp'])
         if expired:
             Logger.warn('JWT Token is expired')
-    except Exception as e:
-        Logger.error('JWT Token validation failed.', e)
+            return False
+    except Exception as exception:
+        Logger.error('JWT Token validation failed due to exception.', exception)
         return False
     return True
 
-def getAccessToken():
+def get_access_token():
     if request.headers and 'Authorization' in request.headers.keys():
         data = request.headers['Authorization']
     elif request.form and 'Authorization' in request.form.keys():

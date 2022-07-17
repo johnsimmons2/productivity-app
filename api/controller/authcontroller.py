@@ -1,19 +1,27 @@
-from controller.controller import OK, UnAuthorized as UNAUTH, BadRequest as BADREQUEST
-from flask import Blueprint
-from helper.inputhelper import getUser
-from helper.jwthelper import createToken
-from service import AuthService
+from flask import Blueprint, request
+from helper.jwthelper import create_token
+from service.authservice import AuthService
+from . import OK, UnAuthorized, BadRequest, Posted
 
 
 auth = Blueprint('auth', __name__)
 
 @auth.route("/auth", methods = ['POST'])
 def authenticate():
-    user = getUser()
-    if user is None:
-        return BADREQUEST('User was not provided or something was wrong with the input fields.')
-    authenticatedUser = AuthService.authenticateUser(user)
-    if authenticatedUser is not None:
-        return OK(createToken(authenticatedUser))
+    if request.data is None:
+        return BadRequest('User was not provided or something was wrong with the input fields.')
+    authenticated = AuthService.authenticate_user()
+    if authenticated is not None:
+        return OK(create_token(authenticated))
     else:
-        return UNAUTH()
+        return UnAuthorized()
+
+@auth.route("/auth/register", methods = ['POST'])
+def post():
+    if request.data is None:
+        return BadRequest('No user was provided or the input was invalid.')
+    result = AuthService.register_user()
+    if result.success:
+        return Posted(result)
+    else:
+        return BadRequest(result)
