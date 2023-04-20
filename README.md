@@ -1,5 +1,12 @@
 # Productivity App
 
+A work in progress productivity app to track habits and chores and whatever other neat features I feel like adding.
+
+Built with PostgreSQL databases, DJango (Python) backend, Angular front-end.
+
+- Backend is in `./api`
+- Frontend is in `./app`
+
 ## Local Setup / Installation
 0. Make sure you have node.js, npm, and @angular/cli with its dependencies.
 1. Install PostgreSQL latest stable version with pgAdmin 4.
